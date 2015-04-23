@@ -8,6 +8,10 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 using UnityEngine;
 
+#if UNITY_IPHONE
+using UnityEngine.iOS;
+#endif
+
 namespace UnitySerializerNG.FilePreferences {
 
     [Serializable]
@@ -61,6 +65,10 @@ namespace UnitySerializerNG.FilePreferences {
 
             try {
                 formatter.Serialize(stream, dict);
+
+#if UNITY_IPHONE
+				Device.SetNoBackupFlag(path);
+#endif
             }
             catch (SerializationException e) {
                 Debug.LogException(e);
@@ -80,6 +88,10 @@ namespace UnitySerializerNG.FilePreferences {
 
                 try {
                     formatter.Serialize(stream, dict);
+					#if UNITY_IPHONE
+					Device.SetNoBackupFlag(path);
+					#endif
+
                 }
                 catch (SerializationException e) {
                     Debug.LogException(e);

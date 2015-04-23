@@ -465,7 +465,22 @@ public static class LevelSerializer
 	/// </value>
     public static bool CanResume
     {
-        get { return !string.IsNullOrEmpty(FilePrefs.GetString(PlayerName + "__RESUME__")); }
+        get 
+		{
+#if UNITY_EDITOR
+			/*if(Application.isPlaying)
+			{
+				return FilePrefs.FileExists(PlayerName + "__RESUME__");
+			}
+			else*/
+			{
+				return !string.IsNullOrEmpty(FilePrefs.GetString(PlayerName + "__RESUME__")); 
+			}
+#else
+			return !string.IsNullOrEmpty(FilePrefs.GetString(PlayerName + "__RESUME__")); 
+#endif
+		}
+
     }
 
     /// <summary>
@@ -496,6 +511,25 @@ public static class LevelSerializer
     ///   Occurs when the level was serialized.
     /// </summary>
     public static event Action GameSaved = delegate { };
+
+	public static void AddGameSavedCallback(Action callback)
+	{
+		if (!GameSaved.GetInvocationList().Contains(callback))
+		{            
+			GameSaved += callback;
+			//Debug.Log("save callback added: inv count: " + +GameSaved.GetInvocationList().Length);
+		}
+	}
+	
+	public static void RemoveGameSavedCallback(Action callback)
+	{
+		if (GameSaved.GetInvocationList().Contains(callback))
+		{
+			
+			GameSaved -= callback;
+			//Debug.Log("save callback removed. inv count: " + GameSaved.GetInvocationList().Length);
+		}
+	}
 
     /// <summary>
     ///   Occurs when suspending serialization.
